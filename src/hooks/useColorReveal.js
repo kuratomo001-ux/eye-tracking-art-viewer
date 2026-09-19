@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef } from "react";
 import { GazeTracker } from "../lib/gazeTracker.js";
 import { ColorRevealRenderer } from "../lib/colorRevealRenderer.js";
 import { SessionLogger } from "../lib/sessionLogger.js";
-import { config } from "../lib/config.js";
 
 // 線画<img>・陰影色彩の元画像<img>・重ねるcanvasのrefを受け取り、
 // 視線推定・段階的な色彩表示・ロギングを配線する。
@@ -32,8 +31,6 @@ export function useColorReveal({ lineArtRef, colorImgRef, canvasRef, onCompleted
       renderer.resize(lineArt.clientWidth, lineArt.clientHeight);
     };
 
-    let lastRenderT = 0;
-
     const handleGaze = (event) => {
       if (!paintingEnabledRef.current) return;
 
@@ -42,15 +39,8 @@ export function useColorReveal({ lineArtRef, colorImgRef, canvasRef, onCompleted
       const localX = x - rect.left;
       const localY = y - rect.top;
 
-      // 解析用の視線経路は間引かずそのまま記録する。
-      logger.recordGaze(localX, localY, t);
-
-      // canvasへの反映(描画・revealedRatio()のgetImageData)は
-      // 検出頻度そのままだと過剰かつ重いので一定間隔に間引く。
-      if (t - lastRenderT < config.reveal.updateIntervalMs) return;
-      lastRenderT = t;
-
       renderer.reveal(localX, localY);
+      logger.recordGaze(localX, localY, t);
 
       if (!logger.isCompleted() && renderer.revealedRatio() > 0.95) {
         logger.markCompleted();

@@ -17,8 +17,6 @@
 - 上記を受けてキャリブレーション画面(`src/components/CalibrationScreen.jsx`)を実装。画面を3x3に分けた9点を、各5回クリックしてもらい`webgazer.recordScreenPosition(x, y, "click")`で教師データとして明示的に学習させる方式。全点完了後にボタンで「較正完了」し、そこで初めて`useColorReveal`の`setPaintingEnabled(true)`が呼ばれて実際に色が塗られ始める(較正中の不正確な視線推定で誤って塗られないよう、ロギング開始・塗り処理はそれまでゲートしてある)。Playwrightで9点クリック→完了ボタン→オーバーレイ消滅までの一連の流れを確認済み。
 - 「精度がまちまちで荒ぶりが大きい」との指摘を受け、平滑化処理を単純移動平均から中央値フィルタ(`src/lib/medianFilter.js`, 直近3点)→One Euro Filter(`src/lib/oneEuroFilter.js`)の2段構成に変更。中央値フィルタで単発の飛び値を除去してから、One Euro Filterで残りのジッターを滑らかにする。合成ノイズ(通常ジッター±20px、10%の確率で±150pxの飛び値)でのシミュレーションでは、最大振れ幅が単純移動平均相当(One Euroのみ)の約85pxから約48pxまで低減した。実際のWebGazer出力での体感確認はまだ。パラメータは`config.js`の`gaze.medianWindow`/`gaze.oneEuro`に集約。
 
-- 「視線座標を画面に反映するリフレッシュレートが高すぎるかも」との指摘を受け、`useColorReveal.js`の`handleGaze`を見直した。視線経路のログ記録(`logger.recordGaze`)は解析データの解像度を落とさないよう間引かず、canvasへの反映(`renderer.reveal()`と、内部で`getImageData`を毎回スキャンする`revealedRatio()`)だけを`config.reveal.updateIntervalMs`(50ms、約20回/秒)で間引くようにした。WebGazerのコールバック頻度そのままで毎回`getImageData`するのは負荷的にもオーバースペックだった。
-
 ## 今後のTODO
 
 - 上記プロトタイプを指導教員に見せ、研究デザイン（情報提示順序を制御するか視線に委ねるか、対象作品の種類など）を詰める。
