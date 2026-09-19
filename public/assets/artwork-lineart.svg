@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+  <rect width="900" height="600" fill="white"/>
+  <g fill="none" stroke="black" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- sun -->
+    <circle cx="700" cy="120" r="60"/>
+    <!-- clouds -->
+    <path d="M120 100 a30 30 0 1 1 60 0 a25 25 0 1 1 40 5 h-100 a20 20 0 0 1 0 -5z"/>
+    <path d="M480 150 a22 22 0 1 1 44 0 a18 18 0 1 1 30 4 h-74 a15 15 0 0 1 0 -4z"/>
+    <!-- mountains -->
+    <path d="M0 420 L180 220 L320 380 L420 260 L620 420 Z"/>
+    <path d="M300 420 L470 280 L640 420 Z"/>
+    <!-- ground line -->
+    <path d="M0 430 H900"/>
+    <!-- tree -->
+    <rect x="770" y="420" width="20" height="80" rx="4"/>
+    <circle cx="780" cy="390" r="55"/>
+    <!-- river -->
+    <path d="M0 470 C 200 440, 300 500, 500 470 S 800 440, 900 480"/>
+  </g>
+</svg>

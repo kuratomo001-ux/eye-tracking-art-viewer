@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from "react";
-import { useGazeMask } from "./hooks/useGazeMask.js";
+import { useColorReveal } from "./hooks/useColorReveal.js";
 
-const artworkSrc = `${import.meta.env.BASE_URL}assets/artwork.svg`;
+const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.svg`;
+const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.svg`;
 
 export default function App() {
-  const artworkRef = useRef(null);
+  const lineArtRef = useRef(null);
+  const colorImgRef = useRef(null);
   const canvasRef = useRef(null);
   const [completed, setCompleted] = useState(false);
 
@@ -12,11 +14,17 @@ export default function App() {
     setCompleted(true);
   }, []);
 
-  const loggerRef = useGazeMask({ artworkRef, canvasRef, onCompleted: handleCompleted });
+  const loggerRef = useColorReveal({
+    lineArtRef,
+    colorImgRef,
+    canvasRef,
+    onCompleted: handleCompleted,
+  });
 
   return (
     <main className="viewer">
-      <img ref={artworkRef} className="viewer__artwork" src={artworkSrc} alt="鑑賞対象の絵画" />
+      <img ref={lineArtRef} className="viewer__lineart" src={lineArtSrc} alt="鑑賞対象の絵画(線画)" />
+      <img ref={colorImgRef} className="viewer__colorSource" src={colorSrc} alt="" aria-hidden="true" />
       <canvas ref={canvasRef} className="viewer__mask" />
 
       {completed && (

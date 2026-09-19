@@ -16,10 +16,14 @@ body {
   height: 100vh;
 }
 
-.viewer__artwork {
+.viewer__lineart {
   display: block;
   max-width: 90vw;
   max-height: 90vh;
+}
+
+.viewer__colorSource {
+  display: none;
 }
 
 .viewer__mask {
