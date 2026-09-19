@@ -89,9 +89,11 @@ export class GazeTracker extends EventTarget {
       };
 
       await webgazer
-        // ridge(全データを均等に扱う)ではなくweightedRidgeにし、
-        // 直近のキャリブレーションデータをより重視させる。
-        .setRegression("weightedRidge")
+        // weightedRidgeは直近のデータを重視するため、注視方式の
+        // キャリブレーション(1点あたり多数のサンプルが時間的に連続する)
+        // だと最後に見た点にモデルが引っ張られてしまう。全サンプルを
+        // 均等に扱うridgeに戻す。
+        .setRegression("ridge")
         .setGazeListener((data) => {
           if (data == null) return;
           this.#emit(data.x, data.y);
