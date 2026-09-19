@@ -1,19 +1,37 @@
 // 視線推定モジュール。React等のUI層に依存しないプレーンなクラスとし、
-// 視線推定ライブラリ(WebGazer.js等)の詳細をここに閉じ込める。
+// 視線推定ライブラリ(WebGazer.js)の詳細をここに閉じ込める。
+// WebGazer.jsはWebカメラ映像をブラウザ内だけで処理し、外部へは送信しない。
 
 import { config } from "./config.js";
 
+const WEBGAZER_SCRIPT_SRC = "https://webgazer.cs.brown.edu/webgazer.js";
+
 export class GazeTracker extends EventTarget {
   #history = [];
+  #mode = null; // "webgazer" | "mouse"
 
-  // 視線推定を開始する。ライブラリ未導入の間はマウス座標で代用し、
-  // 後で #startWebGazer に差し替えても呼び出し側のコードは変わらない。
-  start() {
+  get mode() {
+    return this.#mode;
+  }
+
+  // 視線推定を開始する。WebGazer.jsの読み込み・Webカメラ起動を試み、
+  // 失敗した場合(カメラ無し・権限拒否・スクリプト読み込み失敗など)は
+  // マウス座標で代用する。戻り値で実際に使われたモードを返す。
+  async start() {
+    if (!window.webgazer) {
+      await this.#loadWebgazerScript();
+    }
+
     if (window.webgazer) {
-      this.#startWebGazer();
+      const ok = await this.#startWebGazer();
+      this.#mode = ok ? "webgazer" : "mouse";
+      if (!ok) this.#startMouseFallback();
     } else {
+      this.#mode = "mouse";
       this.#startMouseFallback();
     }
+
+    return this.#mode;
   }
 
   stop() {
@@ -23,13 +41,48 @@ export class GazeTracker extends EventTarget {
     window.removeEventListener("mousemove", this.#handleMouseMove);
   }
 
-  #startWebGazer() {
-    window.webgazer
-      .setGazeListener((data) => {
-        if (data == null) return;
-        this.#emit(data.x, data.y);
-      })
-      .begin();
+  #loadWebgazerScript() {
+    return new Promise((resolve) => {
+      const existing = document.querySelector(`script[src="${WEBGAZER_SCRIPT_SRC}"]`);
+      if (existing) {
+        existing.addEventListener("load", () => resolve(), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = WEBGAZER_SCRIPT_SRC;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => resolve(); // 読み込み失敗時はマウス代用にフォールバック
+      document.head.appendChild(script);
+    });
+  }
+
+  async #startWebGazer() {
+    const webgazer = window.webgazer;
+    try {
+      // TFFacemeshトラッカー(現行版で唯一選択可能)はMediaPipeのFaceMesh
+      // アセットを別途取得する。デフォルトは相対パス"./mediapipe/face_mesh"
+      // を見に行き自ホスト前提になっているため、CDN上のパスを明示する。
+      webgazer.params.faceMeshSolutionPath = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh";
+
+      await webgazer
+        .setRegression("ridge")
+        .setGazeListener((data) => {
+          if (data == null) return;
+          this.#emit(data.x, data.y);
+        })
+        .saveDataAcrossSessions(false)
+        .begin();
+
+      webgazer.showVideoPreview(true);
+      webgazer.showPredictionPoints(true);
+      webgazer.showFaceOverlay(false);
+      webgazer.showFaceFeedbackBox(false);
+      return true;
+    } catch {
+      // Webカメラ権限拒否・カメラ無しなどの場合はここに来る
+      return false;
+    }
   }
 
   #startMouseFallback() {

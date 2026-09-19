@@ -9,23 +9,53 @@ export default function App() {
   const colorImgRef = useRef(null);
   const canvasRef = useRef(null);
   const [completed, setCompleted] = useState(false);
+  const [trackingMode, setTrackingMode] = useState(null); // null | "starting" | "webgazer" | "mouse"
 
   const handleCompleted = useCallback(() => {
     setCompleted(true);
   }, []);
 
-  const loggerRef = useColorReveal({
+  const { loggerRef, startTracking } = useColorReveal({
     lineArtRef,
     colorImgRef,
     canvasRef,
     onCompleted: handleCompleted,
   });
 
+  const handleStart = useCallback(async () => {
+    setTrackingMode("starting");
+    const mode = await startTracking();
+    setTrackingMode(mode);
+  }, [startTracking]);
+
   return (
     <main className="viewer">
       <img ref={lineArtRef} className="viewer__lineart" src={lineArtSrc} alt="鑑賞対象の絵画(線画)" />
       <img ref={colorImgRef} className="viewer__colorSource" src={colorSrc} alt="" aria-hidden="true" />
       <canvas ref={canvasRef} className="viewer__mask" />
+
+      {trackingMode === null && (
+        <div className="start-overlay">
+          <p>
+            Webカメラで視線を検知し、見た部分から色が浮かび上がります。
+            <br />
+            映像はブラウザ内でのみ処理され、外部には送信されません。
+          </p>
+          <button onClick={handleStart}>Webカメラで視線トラッキングを開始</button>
+        </div>
+      )}
+
+      {trackingMode === "starting" && (
+        <div className="start-overlay">
+          <p>Webカメラを起動しています…</p>
+        </div>
+      )}
+
+      {trackingMode === "mouse" && (
+        <p className="status-banner">
+          Webカメラが利用できなかったため、マウス座標で代用しています。
+        </p>
+      )}
 
       {completed && (
         <button
