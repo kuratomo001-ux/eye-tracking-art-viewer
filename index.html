@@ -4,16 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>視線追跡による絵画鑑賞支援システム</title>
-  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <main id="viewer">
-    <img id="artwork" src="assets/artwork.jpg" alt="鑑賞対象の絵画" />
-    <canvas id="mask"></canvas>
-  </main>
-
-  <script src="js/gaze.js"></script>
-  <script src="js/mask.js"></script>
-  <script src="js/main.js"></script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
