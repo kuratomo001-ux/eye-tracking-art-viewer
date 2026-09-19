@@ -13,6 +13,7 @@
 - 指導教員との次回ディスカッションのたたき台として、上記の代替案を実際に動くプロトタイプにした。`src/lib/maskRenderer.js`（黒マスク方式）を`src/lib/colorRevealRenderer.js`に置き換え、線画レイヤーを常時表示する`<img>`＋陰影色彩レイヤーをcanvas上で視線に応じて`destination-in`合成する構成にした。テスト用の線画・カラー画像(`public/assets/artwork-lineart.svg`/`artwork-color.svg`)も新規作成。Playwrightで動作確認済み。**まだ研究デザインとして確定したものではなく、会話のネタとして作った試作品。**
 - `src/lib/gazeTracker.js`にWebGazer.js（`https://webgazer.cs.brown.edu/webgazer.js`、映像はブラウザ内処理のみで外部送信されない）を実際に統合。Webカメラへのアクセスはユーザーがボタンを押した時だけ要求するようにした(`useColorReveal.js`の`startTracking`、`App.jsx`のスタートオーバーレイ)。実装中、現行版WebGazerのTFFacemeshトラッカーがMediaPipeアセットを自ホスト前提の相対パス(`./mediapipe/face_mesh`)で取得しようとして404する問題に当たり、`webgazer.params.faceMeshSolutionPath`をCDN(`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh`)に向けて解決した。PlaywrightのフェイクWebカメラ機能(`--use-fake-device-for-media-stream`)で権限許可からトラッキング開始までの一連の流れを確認済み（実顔画像ではないため視線座標自体の精度は未検証）。
 - ユーザーの要望により、マウス座標で代用するフォールバックを完全に削除。視線検知のみで動作する仕様とし、Webカメラが使えない場合は代用動作せず再試行画面を表示するようにした。
+- 「視線がマウスに引っ張られる」という指摘を受け原因を調査。WebGazer.jsは`begin()`時にデフォルトで`click`/`mousemove`を「その位置を見ていた」教師データとして常時オンライン学習(リッジ回帰の再学習)に使う仕組みがあり、これが原因だった。`webgazer.removeMouseEventListeners()`を呼んで無効化した。ただしこれによりWebGazer側の較正データが一切無い状態になるため、キャリブレーション未実装の現状では推定精度はかなり粗いと見込まれる（TODO参照）。
 
 ## 今後のTODO
 

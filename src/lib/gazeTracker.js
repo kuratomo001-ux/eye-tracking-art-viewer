@@ -72,6 +72,11 @@ export class GazeTracker extends EventTarget {
         .saveDataAcrossSessions(false)
         .begin();
 
+      // WebGazerはデフォルトでclick/mousemoveを「その位置を見ていた」
+      // 教師データとして常時学習に使う(オンライン較正)。これにより
+      // 推定結果がマウス位置に引っ張られてしまうため無効化する。
+      webgazer.removeMouseEventListeners();
+
       webgazer.showVideoPreview(true);
       webgazer.showPredictionPoints(true);
       webgazer.showFaceOverlay(false);
