@@ -5,6 +5,10 @@
 export const config = {
   reveal: {
     radius: 80, // 視線位置周辺を透明化する円の半径(px)
+    // canvasへの反映間隔(ミリ秒)。WebGazerの検出頻度そのままだと
+    // 描画(destination-in合成)とrevealedRatio()のgetImageDataが
+    // 高頻度に走り重いため、見た目の滑らかさを保てる範囲で間引く。
+    updateIntervalMs: 50, // 約20回/秒
   },
   gaze: {
     // 単発の飛び値を先に除去する中央値フィルタの窓サイズ。

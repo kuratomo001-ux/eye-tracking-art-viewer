@@ -39,6 +39,8 @@ The gaze-tracking, mask-rendering, and logging logic is deliberately kept out of
 
 This split exists because canvas/webcam handling is inherently imperative and doesn't benefit from React's render cycle — new features here should generally stay in `src/lib/` as plain classes, with `useColorReveal.js` as the only integration point into React.
 
+`useColorReveal.js`'s `handleGaze` splits into two rates deliberately: `logger.recordGaze()` runs on every single gaze event (full-resolution path data for the evaluation experiment), but the actual canvas work (`renderer.reveal()` + `revealedRatio()`'s `getImageData` scan) is throttled to `config.reveal.updateIntervalMs` (default 50ms / ~20Hz) — WebGazer's native callback rate is much higher than a slowly-changing reveal effect needs, and `getImageData` on every callback was unnecessarily expensive. If you touch this, keep the logging un-throttled and only gate the render/completion-check block.
+
 Line-art and color assets must share the same coordinate system (same `viewBox`/paths) so the two layers align pixel-for-pixel — see `public/assets/artwork-lineart.svg` and `artwork-color.svg`.
 
 ### Asset paths under the Pages base path
