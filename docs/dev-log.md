@@ -11,7 +11,8 @@
 - GitHub Actions + 公式Pagesアクションで自動デプロイを設定。`vite.config.js` の `base` とアセットパスをプロジェクトページのサブパスに合わせて修正。公開URL: `https://kuratomo001-ux.github.io/eye-tracking-art-viewer/`。
 - 指導教員とのメールでのディスカッション内容をもとに、`docs/policy.md` の表示方式を見直し。当初の「全面マスク→視線で局所表示」案の課題（最初の視線位置も以降の移動もランダムになりがち）と、現在検討中の代替案（線画は常時表示し、視線で陰影・色彩を段階的に追加）を記録した。まだ確定仕様ではなく、コードへの反映は保留。
 - 指導教員との次回ディスカッションのたたき台として、上記の代替案を実際に動くプロトタイプにした。`src/lib/maskRenderer.js`（黒マスク方式）を`src/lib/colorRevealRenderer.js`に置き換え、線画レイヤーを常時表示する`<img>`＋陰影色彩レイヤーをcanvas上で視線に応じて`destination-in`合成する構成にした。テスト用の線画・カラー画像(`public/assets/artwork-lineart.svg`/`artwork-color.svg`)も新規作成。Playwrightで動作確認済み。**まだ研究デザインとして確定したものではなく、会話のネタとして作った試作品。**
-- `src/lib/gazeTracker.js`にWebGazer.js（`https://webgazer.cs.brown.edu/webgazer.js`、映像はブラウザ内処理のみで外部送信されない）を実際に統合。Webカメラへのアクセスはユーザーがボタンを押した時だけ要求するようにし(`useColorReveal.js`の`startTracking`、`App.jsx`のスタートオーバーレイ)、失敗時はマウス代用にフォールバックする。実装中、現行版WebGazerのTFFacemeshトラッカーがMediaPipeアセットを自ホスト前提の相対パス(`./mediapipe/face_mesh`)で取得しようとして404する問題に当たり、`webgazer.params.faceMeshSolutionPath`をCDN(`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh`)に向けて解決した。PlaywrightのフェイクWebカメラ機能(`--use-fake-device-for-media-stream`)で権限許可からトラッキング開始までの一連の流れを確認済み（実顔画像ではないため視線座標自体の精度は未検証）。
+- `src/lib/gazeTracker.js`にWebGazer.js（`https://webgazer.cs.brown.edu/webgazer.js`、映像はブラウザ内処理のみで外部送信されない）を実際に統合。Webカメラへのアクセスはユーザーがボタンを押した時だけ要求するようにした(`useColorReveal.js`の`startTracking`、`App.jsx`のスタートオーバーレイ)。実装中、現行版WebGazerのTFFacemeshトラッカーがMediaPipeアセットを自ホスト前提の相対パス(`./mediapipe/face_mesh`)で取得しようとして404する問題に当たり、`webgazer.params.faceMeshSolutionPath`をCDN(`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh`)に向けて解決した。PlaywrightのフェイクWebカメラ機能(`--use-fake-device-for-media-stream`)で権限許可からトラッキング開始までの一連の流れを確認済み（実顔画像ではないため視線座標自体の精度は未検証）。
+- ユーザーの要望により、マウス座標で代用するフォールバックを完全に削除。視線検知のみで動作する仕様とし、Webカメラが使えない場合は代用動作せず再試行画面を表示するようにした。
 
 ## 今後のTODO
 
