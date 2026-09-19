@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useColorReveal } from "./hooks/useColorReveal.js";
+import CalibrationScreen from "./components/CalibrationScreen.jsx";
 
 const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.svg`;
 const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.svg`;
@@ -10,12 +11,13 @@ export default function App() {
   const canvasRef = useRef(null);
   const [completed, setCompleted] = useState(false);
   const [trackingMode, setTrackingMode] = useState(null); // null | "starting" | "webgazer" | "unavailable"
+  const [calibrated, setCalibrated] = useState(false);
 
   const handleCompleted = useCallback(() => {
     setCompleted(true);
   }, []);
 
-  const { loggerRef, startTracking } = useColorReveal({
+  const { loggerRef, startTracking, calibrate, setPaintingEnabled } = useColorReveal({
     lineArtRef,
     colorImgRef,
     canvasRef,
@@ -27,6 +29,11 @@ export default function App() {
     const mode = await startTracking();
     setTrackingMode(mode);
   }, [startTracking]);
+
+  const handleCalibrationComplete = useCallback(() => {
+    setPaintingEnabled(true);
+    setCalibrated(true);
+  }, [setPaintingEnabled]);
 
   return (
     <main className="viewer">
@@ -60,6 +67,10 @@ export default function App() {
           </p>
           <button onClick={handleStart}>もう一度試す</button>
         </div>
+      )}
+
+      {trackingMode === "webgazer" && !calibrated && (
+        <CalibrationScreen onCalibrate={calibrate} onComplete={handleCalibrationComplete} />
       )}
 
       {completed && (

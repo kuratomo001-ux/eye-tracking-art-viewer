@@ -39,6 +39,13 @@ export class GazeTracker extends EventTarget {
     }
   }
 
+  // キャリブレーション用。「(x, y)を見ていた」という教師データを
+  // 明示的に1件追加する。mousemoveの自動学習は無効化してあるため、
+  // 意図した点だけを正しく学習させるにはこの方法で行う。
+  calibrate(x, y) {
+    window.webgazer?.recordScreenPosition(x, y, "click");
+  }
+
   #loadWebgazerScript() {
     return new Promise((resolve) => {
       const existing = document.querySelector(`script[src="${WEBGAZER_SCRIPT_SRC}"]`);

@@ -14,11 +14,11 @@
 - `src/lib/gazeTracker.js`にWebGazer.js（`https://webgazer.cs.brown.edu/webgazer.js`、映像はブラウザ内処理のみで外部送信されない）を実際に統合。Webカメラへのアクセスはユーザーがボタンを押した時だけ要求するようにした(`useColorReveal.js`の`startTracking`、`App.jsx`のスタートオーバーレイ)。実装中、現行版WebGazerのTFFacemeshトラッカーがMediaPipeアセットを自ホスト前提の相対パス(`./mediapipe/face_mesh`)で取得しようとして404する問題に当たり、`webgazer.params.faceMeshSolutionPath`をCDN(`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh`)に向けて解決した。PlaywrightのフェイクWebカメラ機能(`--use-fake-device-for-media-stream`)で権限許可からトラッキング開始までの一連の流れを確認済み（実顔画像ではないため視線座標自体の精度は未検証）。
 - ユーザーの要望により、マウス座標で代用するフォールバックを完全に削除。視線検知のみで動作する仕様とし、Webカメラが使えない場合は代用動作せず再試行画面を表示するようにした。
 - 「視線がマウスに引っ張られる」という指摘を受け原因を調査。WebGazer.jsは`begin()`時にデフォルトで`click`/`mousemove`を「その位置を見ていた」教師データとして常時オンライン学習(リッジ回帰の再学習)に使う仕組みがあり、これが原因だった。`webgazer.removeMouseEventListeners()`を呼んで無効化した。ただしこれによりWebGazer側の較正データが一切無い状態になるため、キャリブレーション未実装の現状では推定精度はかなり粗いと見込まれる（TODO参照）。
+- 上記を受けてキャリブレーション画面(`src/components/CalibrationScreen.jsx`)を実装。画面を3x3に分けた9点を、各5回クリックしてもらい`webgazer.recordScreenPosition(x, y, "click")`で教師データとして明示的に学習させる方式。全点完了後にボタンで「較正完了」し、そこで初めて`useColorReveal`の`setPaintingEnabled(true)`が呼ばれて実際に色が塗られ始める(較正中の不正確な視線推定で誤って塗られないよう、ロギング開始・塗り処理はそれまでゲートしてある)。Playwrightで9点クリック→完了ボタン→オーバーレイ消滅までの一連の流れを確認済み。
 
 ## 今後のTODO
 
 - 上記プロトタイプを指導教員に見せ、研究デザイン（情報提示順序を制御するか視線に委ねるか、対象作品の種類など）を詰める。
-- 実際に人の顔でWebGazer.jsの視線推定精度を確認する（今回はPlaywrightのフェイクカメラでの起動確認のみ）。
-- キャリブレーションUIを実装する（WebGazerは初期状態では精度が粗いため、クリックなどによる較正フローが必要になりそう）。
+- 実際に人の顔でキャリブレーション後の視線推定精度を確認する（今回はPlaywrightのフェイクカメラでの操作フロー確認のみ）。精度が実用に耐えるか次第で、クリック回数や点の数を調整する必要があるかもしれない。
 - 実際の鑑賞対象作品画像に差し替える（現状は仮のSVG画像。線画・カラー版を対で用意する必要あり）。
 - 一括表示 vs 段階的表示の比較実験と、鑑賞後アンケート画面を実装する。
