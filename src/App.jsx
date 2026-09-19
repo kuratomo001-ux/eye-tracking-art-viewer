@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useGazeMask } from "./hooks/useGazeMask.js";
 
-const artworkSrc = "/assets/artwork.svg";
+const artworkSrc = `${import.meta.env.BASE_URL}assets/artwork.svg`;
 
 export default function App() {
   const artworkRef = useRef(null);
