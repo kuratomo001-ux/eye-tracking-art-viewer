@@ -3,12 +3,19 @@
 // WebGazer.jsはWebカメラ映像をブラウザ内だけで処理し、外部へは送信しない。
 
 import { config } from "./config.js";
+import { OneEuroFilter } from "./oneEuroFilter.js";
+import { MedianFilter } from "./medianFilter.js";
 
 const WEBGAZER_SCRIPT_SRC = "https://webgazer.cs.brown.edu/webgazer.js";
 
 export class GazeTracker extends EventTarget {
-  #history = [];
   #mode = null; // "webgazer" | "unavailable"
+  // 単発の飛び値を中央値フィルタで先に除去してから、One Euro Filterで
+  // 残りのジッターを滑らかにする2段構成。
+  #medianX = new MedianFilter(config.gaze.medianWindow);
+  #medianY = new MedianFilter(config.gaze.medianWindow);
+  #filterX = new OneEuroFilter(config.gaze.oneEuro);
+  #filterY = new OneEuroFilter(config.gaze.oneEuro);
 
   get mode() {
     return this.#mode;
@@ -96,20 +103,9 @@ export class GazeTracker extends EventTarget {
   }
 
   #emit(rawX, rawY) {
-    const { x, y } = this.#smooth(rawX, rawY);
-    this.dispatchEvent(new CustomEvent("gaze", { detail: { x, y, t: performance.now() } }));
-  }
-
-  #smooth(x, y) {
-    this.#history.push({ x, y });
-    if (this.#history.length > config.gaze.smoothingWindow) {
-      this.#history.shift();
-    }
-    const n = this.#history.length;
-    const sum = this.#history.reduce(
-      (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
-      { x: 0, y: 0 }
-    );
-    return { x: sum.x / n, y: sum.y / n };
+    const t = performance.now();
+    const x = this.#filterX.filter(t, this.#medianX.filter(rawX));
+    const y = this.#filterY.filter(t, this.#medianY.filter(rawY));
+    this.dispatchEvent(new CustomEvent("gaze", { detail: { x, y, t } }));
   }
 }

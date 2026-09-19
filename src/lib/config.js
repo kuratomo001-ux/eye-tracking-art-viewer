@@ -7,7 +7,15 @@ export const config = {
     radius: 80, // 視線位置周辺を透明化する円の半径(px)
   },
   gaze: {
-    // WebGazer等の推定結果が揺れるため、直近N点の移動平均で平滑化する
-    smoothingWindow: 5,
+    // 単発の飛び値を先に除去する中央値フィルタの窓サイズ。
+    medianWindow: 3,
+    // 残りのジッターを滑らかにするOne Euro Filterのパラメータ。
+    // minCutoffを下げるほど静止時の揺れが減り、betaを上げるほど
+    // 速い視線移動への追従が良くなる(その分揺れが残りやすい)。
+    oneEuro: {
+      minCutoff: 0.3,
+      beta: 0.01,
+      dCutoff: 1.0,
+    },
   },
 };
