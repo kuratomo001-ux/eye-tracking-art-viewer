@@ -77,8 +77,21 @@ export class GazeTracker extends EventTarget {
       // を見に行き自ホスト前提になっているため、CDN上のパスを明示する。
       webgazer.params.faceMeshSolutionPath = "https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh";
 
+      // Webカメラの取得解像度を上げる(デフォルトはideal 640x480)。
+      // 顔・瞳の特徴をより高精細に取得でき、精度向上が期待できる。
+      // カメラが対応していない場合はブラウザ側で可能な範囲に丸められる。
+      webgazer.params.camConstraints = {
+        video: {
+          width: { min: 640, ideal: 1920, max: 1920 },
+          height: { min: 480, ideal: 1080, max: 1080 },
+          facingMode: "user",
+        },
+      };
+
       await webgazer
-        .setRegression("ridge")
+        // ridge(全データを均等に扱う)ではなくweightedRidgeにし、
+        // 直近のキャリブレーションデータをより重視させる。
+        .setRegression("weightedRidge")
         .setGazeListener((data) => {
           if (data == null) return;
           this.#emit(data.x, data.y);
