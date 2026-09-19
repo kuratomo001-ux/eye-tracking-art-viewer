@@ -71,30 +71,30 @@ body {
   font-size: 16px;
 }
 
-.calibration__pursuit-dot {
+.calibration__dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  border: none;
   background: #e94f37;
-  box-shadow: 0 0 0 6px rgba(233, 79, 55, 0.3);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.calibration__progress-track {
+.calibration__dot:disabled {
+  background: #3f8a4d;
+  cursor: default;
+}
+
+.calibration__done {
   position: absolute;
   bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
-  max-width: 400px;
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
-
-.calibration__progress-fill {
-  height: 100%;
-  background: #44bba4;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
