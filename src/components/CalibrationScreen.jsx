@@ -1,14 +1,15 @@
 import { useState } from "react";
 
-// 画面を3x3に分けた9点。各点を見ながら規定回数クリックしてもらうことで、
+// 四隅+中央の5点。各点を見ながら規定回数クリックしてもらうことで、
 // WebGazerの視線推定モデルに「この座標を見ているときの目の特徴」を教える。
+// 9点x5回(45クリック)は手間が大きかったため簡略化した。
 const POINTS = [
-  [10, 10], [50, 10], [90, 10],
-  [10, 50], [50, 50], [90, 50],
-  [10, 90], [50, 90], [90, 90],
+  [10, 10], [90, 10],
+  [50, 50],
+  [10, 90], [90, 90],
 ];
 
-const CLICKS_PER_POINT = 5;
+const CLICKS_PER_POINT = 3;
 
 export default function CalibrationScreen({ onCalibrate, onComplete }) {
   const [counts, setCounts] = useState(() => POINTS.map(() => 0));
