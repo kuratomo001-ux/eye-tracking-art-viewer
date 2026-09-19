@@ -9,7 +9,7 @@ export default function App() {
   const colorImgRef = useRef(null);
   const canvasRef = useRef(null);
   const [completed, setCompleted] = useState(false);
-  const [trackingMode, setTrackingMode] = useState(null); // null | "starting" | "webgazer" | "mouse"
+  const [trackingMode, setTrackingMode] = useState(null); // null | "starting" | "webgazer" | "unavailable"
 
   const handleCompleted = useCallback(() => {
     setCompleted(true);
@@ -51,10 +51,15 @@ export default function App() {
         </div>
       )}
 
-      {trackingMode === "mouse" && (
-        <p className="status-banner">
-          Webカメラが利用できなかったため、マウス座標で代用しています。
-        </p>
+      {trackingMode === "unavailable" && (
+        <div className="start-overlay">
+          <p>
+            Webカメラを利用できませんでした。
+            <br />
+            カメラが接続されているか、ブラウザの権限設定をご確認のうえ再度お試しください。
+          </p>
+          <button onClick={handleStart}>もう一度試す</button>
+        </div>
       )}
 
       {completed && (

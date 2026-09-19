@@ -8,15 +8,16 @@ const WEBGAZER_SCRIPT_SRC = "https://webgazer.cs.brown.edu/webgazer.js";
 
 export class GazeTracker extends EventTarget {
   #history = [];
-  #mode = null; // "webgazer" | "mouse"
+  #mode = null; // "webgazer" | "unavailable"
 
   get mode() {
     return this.#mode;
   }
 
-  // 視線推定を開始する。WebGazer.jsの読み込み・Webカメラ起動を試み、
-  // 失敗した場合(カメラ無し・権限拒否・スクリプト読み込み失敗など)は
-  // マウス座標で代用する。戻り値で実際に使われたモードを返す。
+  // 視線推定を開始する。WebGazer.jsの読み込み・Webカメラ起動を試みる。
+  // マウス座標での代用は行わない(視線のみで動作させるため)。
+  // 戻り値は "webgazer"(成功) または "unavailable"(カメラ無し・権限拒否・
+  // スクリプト読み込み失敗など)。
   async start() {
     if (!window.webgazer) {
       await this.#loadWebgazerScript();
@@ -24,11 +25,9 @@ export class GazeTracker extends EventTarget {
 
     if (window.webgazer) {
       const ok = await this.#startWebGazer();
-      this.#mode = ok ? "webgazer" : "mouse";
-      if (!ok) this.#startMouseFallback();
+      this.#mode = ok ? "webgazer" : "unavailable";
     } else {
-      this.#mode = "mouse";
-      this.#startMouseFallback();
+      this.#mode = "unavailable";
     }
 
     return this.#mode;
@@ -38,7 +37,6 @@ export class GazeTracker extends EventTarget {
     if (window.webgazer) {
       window.webgazer.end();
     }
-    window.removeEventListener("mousemove", this.#handleMouseMove);
   }
 
   #loadWebgazerScript() {
@@ -52,7 +50,7 @@ export class GazeTracker extends EventTarget {
       script.src = WEBGAZER_SCRIPT_SRC;
       script.async = true;
       script.onload = () => resolve();
-      script.onerror = () => resolve(); // 読み込み失敗時はマウス代用にフォールバック
+      script.onerror = () => resolve(); // window.webgazerが無いままなのでunavailable扱いになる
       document.head.appendChild(script);
     });
   }
@@ -84,14 +82,6 @@ export class GazeTracker extends EventTarget {
       return false;
     }
   }
-
-  #startMouseFallback() {
-    window.addEventListener("mousemove", this.#handleMouseMove);
-  }
-
-  #handleMouseMove = (event) => {
-    this.#emit(event.clientX, event.clientY);
-  };
 
   #emit(rawX, rawY) {
     const { x, y } = this.#smooth(rawX, rawY);
