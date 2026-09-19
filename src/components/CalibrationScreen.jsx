@@ -10,7 +10,7 @@ const POINTS = [
   [10, 90], [90, 90],
 ];
 
-const DWELL_MS = 5000;
+const DWELL_MS = 2000;
 const SAMPLE_INTERVAL_MS = 150;
 
 const RING_RADIUS = 16;
