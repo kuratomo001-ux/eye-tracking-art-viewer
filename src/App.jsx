@@ -2,8 +2,8 @@ import { useCallback, useRef, useState } from "react";
 import { useColorReveal } from "./hooks/useColorReveal.js";
 import CalibrationScreen from "./components/CalibrationScreen.jsx";
 
-const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.svg`;
-const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.svg`;
+const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.png`;
+const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.jpg`;
 
 export default function App() {
   const lineArtRef = useRef(null);

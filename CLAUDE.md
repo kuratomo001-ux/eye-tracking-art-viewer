@@ -43,7 +43,7 @@ The gaze-tracking, mask-rendering, and logging logic is deliberately kept out of
 
 This split exists because canvas/webcam handling is inherently imperative and doesn't benefit from React's render cycle — new features here should generally stay in `src/lib/` as plain classes, with `useColorReveal.js` as the only integration point into React.
 
-Line-art and color assets must share the same coordinate system (same `viewBox`/paths) so the two layers align pixel-for-pixel — see `public/assets/artwork-lineart.svg` and `artwork-color.svg`.
+Line-art and color assets must be the same pixel dimensions and framing so the two layers align — see `public/assets/artwork-lineart.png` and `artwork-color.jpg`. These are Van Gogh's *The Starry Night* (1889, public domain), sourced from Wikimedia Commons at 900x712: `artwork-color.jpg` is the painting as-is, and `artwork-lineart.png` is a from-scratch Sobel edge detection (see `docs/dev-log.md` for the generation script/parameters — not a checked-in tool, was a one-off Node+sharp script) thresholded at a ratio tuned to keep the swirl/cypress/skyline structure visible without rendering every brushstroke (too dense made the line-art layer look "finished" on its own, undermining the color-reveal's discovery effect).
 
 ### Asset paths under the Pages base path
 
