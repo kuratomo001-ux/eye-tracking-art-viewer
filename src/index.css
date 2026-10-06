@@ -134,6 +134,18 @@ body {
   box-shadow: 0 0 0 4px rgba(233, 79, 55, 0.4);
 }
 
+.accuracy-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accuracy-card__digit {
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+}
+
 .accuracy__panel {
   position: absolute;
   inset: 0;
