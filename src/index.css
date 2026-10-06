@@ -98,3 +98,68 @@ body {
   padding: 10px 20px;
   cursor: pointer;
 }
+
+.accuracy {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  color: white;
+}
+
+.accuracy__prompt {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  text-align: center;
+}
+
+.accuracy__row {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+}
+
+.accuracy-card {
+  border: 2px solid #555;
+  border-radius: 8px;
+  background: #222;
+}
+
+.accuracy-card--target {
+  border-color: #e94f37;
+  background: #3a2a28;
+  box-shadow: 0 0 0 4px rgba(233, 79, 55, 0.4);
+}
+
+.accuracy__panel {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.accuracy__panel button {
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.accuracy__table {
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.accuracy__table th,
+.accuracy__table td {
+  border: 1px solid #555;
+  padding: 6px 12px;
+}

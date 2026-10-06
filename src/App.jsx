@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from "react";
 import { useColorReveal } from "./hooks/useColorReveal.js";
 import CalibrationScreen from "./components/CalibrationScreen.jsx";
+import AccuracyTest from "./components/AccuracyTest.jsx";
 
 const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.png`;
 const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.jpg`;
 
-export default function App() {
+function ArtViewer() {
   const lineArtRef = useRef(null);
   const colorImgRef = useRef(null);
   const canvasRef = useRef(null);
@@ -83,4 +84,10 @@ export default function App() {
       )}
     </main>
   );
+}
+
+// ?mode=accuracy で視線の精度検証モードを開く。指定が無ければ絵画ビューアー。
+export default function App() {
+  const mode = new URLSearchParams(window.location.search).get("mode");
+  return mode === "accuracy" ? <AccuracyTest /> : <ArtViewer />;
 }

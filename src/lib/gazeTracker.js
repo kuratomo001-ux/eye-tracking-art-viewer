@@ -46,6 +46,12 @@ export class GazeTracker extends EventTarget {
     }
   }
 
+  // WebGazerが描く「推定した視線位置の赤い点」の表示切替。精度検証中は、
+  // 被験者が点を目で追って結果が歪まないよう非表示にする。
+  setGazeDotVisible(visible) {
+    window.webgazer?.showPredictionPoints(visible);
+  }
+
   // キャリブレーション用。「(x, y)を見ていた」という教師データを
   // 明示的に1件追加する。mousemoveの自動学習は無効化してあるため、
   // 意図した点だけを正しく学習させるにはこの方法で行う。

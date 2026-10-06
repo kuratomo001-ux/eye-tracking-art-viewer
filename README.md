@@ -28,6 +28,8 @@ npm install
 npm run dev
 ```
 
+`?mode=accuracy`を付けて開くと、Webカメラ視線で札サイズの領域をどこまで識別できるかを測る精度検証モードになる（例: `.../eye-tracking-art-viewer/?mode=accuracy`）。
+
 `public/assets/artwork-lineart.png`（線画）と`artwork-color.jpg`（陰影・色彩）は同じ構図・同じ寸法で対にする必要がある。差し替える場合は`src/App.jsx`の`lineArtSrc`/`colorSrc`も変更する。
 
 現在の作品はVan Gogh「星月夜」(1889年、パブリックドメイン、Wikimedia Commonsより)。線画版はNode.js + `sharp`によるSobelエッジ検出で生成した(生成スクリプトはリポジトリに含めていない一回限りの前処理)。
