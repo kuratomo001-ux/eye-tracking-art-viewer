@@ -30,9 +30,14 @@ npm run dev
 
 `?mode=accuracy`を付けて開くと、Webカメラ視線で札サイズの領域をどこまで識別できるかを測る精度検証モードになる（例: `.../eye-tracking-art-viewer/?mode=accuracy`）。
 
-`public/assets/artwork-lineart.png`（線画）と`artwork-color.jpg`（陰影・色彩）は同じ構図・同じ寸法で対にする必要がある。差し替える場合は`src/App.jsx`の`lineArtSrc`/`colorSrc`も変更する。
+作品は`public/assets/`に「線画」と「陰影・色彩」の画像を同じ構図・同じ寸法の対で置き、`src/App.jsx`の`ARTWORKS`に登録する。`?art=`で切り替える（例: `?art=starry`）。指定が無い場合や不正な値のときは既定の作品になる。
 
-現在の作品はVan Gogh「星月夜」(1889年、パブリックドメイン、Wikimedia Commonsより)。線画版はNode.js + `sharp`によるSobelエッジ検出で生成した(生成スクリプトはリポジトリに含めていない一回限りの前処理)。
+| `?art=` | 作品 | 出典 |
+|---|---|---|
+| `bedroom`（既定） | Van Gogh「アルルの寝室」第1作（1888年、ゴッホ美術館所蔵） | パブリックドメイン、Wikimedia Commons |
+| `starry` | Van Gogh「星月夜」（1889年） | パブリックドメイン、Wikimedia Commons |
+
+線画版は`scripts/make-lineart.mjs`で生成する（Sobelエッジ検出。使い方はスクリプトの冒頭に記載）。`sharp`は実行時だけ必要なので、`npm install --no-save sharp`で入れる。
 
 ## 今後の実装予定
 

@@ -3,10 +3,24 @@ import { useColorReveal } from "./hooks/useColorReveal.js";
 import CalibrationScreen from "./components/CalibrationScreen.jsx";
 import AccuracyTest from "./components/AccuracyTest.jsx";
 
-const lineArtSrc = `${import.meta.env.BASE_URL}assets/artwork-lineart.png`;
-const colorSrc = `${import.meta.env.BASE_URL}assets/artwork-color.jpg`;
+// 作品ごとに「線画」と「陰影・色彩」の画像を対で持つ。?art=starry のように切り替える。
+const ARTWORKS = {
+  bedroom: { lineArt: "assets/bedroom-lineart.png", color: "assets/bedroom-color.jpg" },
+  starry: { lineArt: "assets/starry-lineart.png", color: "assets/starry-color.jpg" },
+};
+const DEFAULT_ARTWORK = "bedroom";
+
+function resolveArtwork() {
+  const key = new URLSearchParams(window.location.search).get("art");
+  const artwork = ARTWORKS[Object.hasOwn(ARTWORKS, key) ? key : DEFAULT_ARTWORK];
+  return {
+    lineArtSrc: `${import.meta.env.BASE_URL}${artwork.lineArt}`,
+    colorSrc: `${import.meta.env.BASE_URL}${artwork.color}`,
+  };
+}
 
 function ArtViewer() {
+  const { lineArtSrc, colorSrc } = resolveArtwork();
   const lineArtRef = useRef(null);
   const colorImgRef = useRef(null);
   const canvasRef = useRef(null);
