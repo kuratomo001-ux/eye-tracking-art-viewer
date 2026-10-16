@@ -2,22 +2,8 @@ import { useCallback, useRef, useState } from "react";
 import { useColorReveal } from "./hooks/useColorReveal.js";
 import CalibrationScreen from "./components/CalibrationScreen.jsx";
 import AccuracyTest from "./components/AccuracyTest.jsx";
-
-// 作品ごとに「線画」と「陰影・色彩」の画像を対で持つ。?art=starry のように切り替える。
-const ARTWORKS = {
-  bedroom: { lineArt: "assets/bedroom-lineart.png", color: "assets/bedroom-color.jpg" },
-  starry: { lineArt: "assets/starry-lineart.png", color: "assets/starry-color.jpg" },
-};
-const DEFAULT_ARTWORK = "bedroom";
-
-function resolveArtwork() {
-  const key = new URLSearchParams(window.location.search).get("art");
-  const artwork = ARTWORKS[Object.hasOwn(ARTWORKS, key) ? key : DEFAULT_ARTWORK];
-  return {
-    lineArtSrc: `${import.meta.env.BASE_URL}${artwork.lineArt}`,
-    colorSrc: `${import.meta.env.BASE_URL}${artwork.color}`,
-  };
-}
+import ObserveMode from "./components/ObserveMode.jsx";
+import { resolveArtwork } from "./artworks.js";
 
 function ArtViewer() {
   const { lineArtSrc, colorSrc } = resolveArtwork();
@@ -100,8 +86,11 @@ function ArtViewer() {
   );
 }
 
-// ?mode=accuracy で視線の精度検証モードを開く。指定が無ければ絵画ビューアー。
+// ?mode=accuracy で視線の精度検証、?mode=observe で観察モード(領域ごとの視線の集計)を開く。
+// 指定が無ければ絵画ビューアー。
 export default function App() {
   const mode = new URLSearchParams(window.location.search).get("mode");
-  return mode === "accuracy" ? <AccuracyTest /> : <ArtViewer />;
+  if (mode === "accuracy") return <AccuracyTest />;
+  if (mode === "observe") return <ObserveMode />;
+  return <ArtViewer />;
 }

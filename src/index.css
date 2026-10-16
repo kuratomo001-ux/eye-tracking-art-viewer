@@ -175,3 +175,138 @@ body {
   border: 1px solid #555;
   padding: 6px 12px;
 }
+
+.observe {
+  position: fixed;
+  inset: 0;
+  background: #111;
+  color: white;
+  overflow: auto;
+}
+
+.observe__stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.observe__painting {
+  display: block;
+}
+
+.observe__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: rgba(255, 255, 255, 0.35);
+  animation: observe-progress linear forwards;
+}
+
+@keyframes observe-progress {
+  to {
+    width: 100%;
+  }
+}
+
+.observe__panel {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.observe__panel button {
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.observe__options {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.observe__options fieldset {
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.observe__results {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.observe__figure {
+  position: relative;
+}
+
+.observe__figure img {
+  display: block;
+}
+
+.observe__overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.observe__label {
+  fill: white;
+  stroke: black;
+  stroke-width: 3px;
+  paint-order: stroke;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.observe__check {
+  display: block;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.observe__check input[type="number"] {
+  width: 80px;
+}
+
+.observe__table {
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
+}
+
+.observe__table th,
+.observe__table td {
+  border: 1px solid #555;
+  padding: 6px 12px;
+}
+
+.observe__attended {
+  color: #44bba4;
+  font-weight: bold;
+}
+
+.observe__unattended {
+  color: #e94f37;
+  font-weight: bold;
+}
+
+.observe__actions {
+  display: flex;
+  gap: 12px;
+}

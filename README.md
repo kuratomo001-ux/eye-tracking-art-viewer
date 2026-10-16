@@ -28,9 +28,11 @@ npm install
 npm run dev
 ```
 
+`?mode=observe`を付けて開くと、作品を自由に鑑賞して視線を記録し、領域（窓・ベッド・床など）ごとの滞在時間と「注目したか」を集計する観察モードになる（例: `.../eye-tracking-art-viewer/?mode=observe`）。表示サイズと鑑賞時間を選べる。領域の定義は`src/data/aois.js`にある（現在はアルルの寝室のみ）。
+
 `?mode=accuracy`を付けて開くと、Webカメラ視線で札サイズの領域をどこまで識別できるかを測る精度検証モードになる（例: `.../eye-tracking-art-viewer/?mode=accuracy`）。
 
-作品は`public/assets/`に「線画」と「陰影・色彩」の画像を同じ構図・同じ寸法の対で置き、`src/App.jsx`の`ARTWORKS`に登録する。`?art=`で切り替える（例: `?art=starry`）。指定が無い場合や不正な値のときは既定の作品になる。
+作品は`public/assets/`に「線画」と「陰影・色彩」の画像を同じ構図・同じ寸法の対で置き、`src/artworks.js`の`ARTWORKS`に登録する。`?art=`で切り替える（例: `?art=starry`）。指定が無い場合や不正な値のときは既定の作品になる。
 
 | `?art=` | 作品 | 出典 |
 |---|---|---|
