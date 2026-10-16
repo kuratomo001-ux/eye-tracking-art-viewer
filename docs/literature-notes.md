@@ -1,10 +1,11 @@
 # 文献メモ
 
-視線研究の先行研究メモ。2026年10月時点。次の3系統に分けて記録している。
+視線研究の先行研究メモ。2026年10月時点。次の4系統に分けて記録している。
 
 - **A. カードゲーム・対戦ゲームにおける視線研究** — 研究テーマ候補「ババ抜きでの視線計測・データ化」（テーマ変更は**未決定**、指導教員に未相談）のため。
 - **B. 絵画での視線誘導・視線連動表示** — 絵画鑑賞ビューアー側の研究のため。
 - **C. ウェブカメラによる視線計測の手法と精度** — どちらの研究でも、計測の精度が前提になるため。
+- **D. 未注目領域のフィードバックと、視線を使った鑑賞支援** — 「まだ注目していない領域を検出して提示する」方向（`docs/policy.md`冒頭）のため。
 
 ## 調査の範囲と限界
 
@@ -120,7 +121,7 @@ McConkie & Rayner (1975)（読書。掲載誌は未確認）／Loschky & McConki
 
 - Massaro et al. (2012) *When Art Moves the Eyes: A Behavioral and Eye-Tracking Study.* PLoS ONE, 7(5), e37285. — 構図・色彩・人物配置が視線移動に影響。 https://pmc.ncbi.nlm.nih.gov/articles/PMC3356266/
 - Kapoula, Daunys et al. (2021) *Viewing Patterns and Perspectival Paintings.* Vision Research, 188, 50–63.
-- Bellucci et al. (2022) *A Gaze-Based Interactive System to Explore Artwork Imagery.* International Journal of Multimedia Information Retrieval, 11(1), 33–48.
+- Bellucci et al. (2022) *A Gaze-Based Interactive System to Explore Artwork Imagery.* International Journal of Multimedia Information Retrieval, 11(1), 33–48. — 作品画像が視線に応じて応答する（拡大・移動、注視した領域に紐づく解説の表示）。検索結果の記述では、「見落とした領域を示す」ものではない。 https://pmc.ncbi.nlm.nih.gov/articles/PMC8137419/
 
 ---
 
@@ -180,6 +181,58 @@ McConkie & Rayner (1975)（読書。掲載誌は未確認）／Loschky & McConki
 
 ---
 
+## D. 未注目領域のフィードバックと、視線を使った鑑賞支援
+
+「見た領域・見ていない領域を本人に示す」介入の効果についての研究。探索・読影の分野が中心で、鑑賞を対象にしたものは見つからなかった。
+
+### 18. 視覚探索での「検索済み領域」のフィードバック
+
+*Eye movement feedback fails to improve visual search performance.* Cognitive Research: Principles and Implications（2017年）／ *Simple eye-movement feedback during visual search is not helpful.*（PMC掲載）
+
+- 内容: 観察者に、すでに調べた領域を（注視した所から灰色の覆いを消す形で）示しても、見落としが減る、あるいは速く同じ精度で探せる、という予測は成り立たなかった。動機として、肺がん検診で見落とされる結節の約3分の1は一度も注視されていない、という指摘がある。
+- 関係: 「未注目領域を示す」介入に近い設計で、**効果が出なかった**報告。鑑賞でも効果が出ない可能性を織り込む根拠になる。
+- 確認状況: 検索結果の要約のみ。**著者は未確認。** 2つのタイトルは同じ研究の別の版か関連研究か、確認できていない。
+- https://link.springer.com/article/10.1186/s41235-017-0083-2
+- https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5698384/
+
+### 19. 胸部X線読影での視線フィードバックのランダム化比較試験
+
+*Incorporation of Eye-Tracking and Gaze Feedback to Characterize and Improve Radiologist Search Patterns of Chest X-rays: A Randomized Controlled Clinical Trial.* arXiv:2308.06280
+
+- 内容: 介入群で、疑わしい結節の検出が絶対値で38.89%向上した。一方、速度・探索パターンの均一性・注意の逸れ・網羅率には有意な変化がなかった。
+- 関係: 成績が上がっても、網羅率が上がったとは限らない。「網羅させる」ことと「発見を増やす」ことは別、という整理の材料になる。
+- 確認状況: 検索結果の要約のみ。
+- https://arxiv.org/abs/2308.06280
+
+### 20. 医学生の放射線読影での視線表示フィードバック
+
+*The effects of gaze-display feedback on medical students' self-monitoring and learning in radiology.*
+
+- 内容: どこを検索したかを示す表示を使ったが、事後テストの成績、自己評価の正確さ、視聴の網羅性、自己効力感のいずれにも利点が見られなかった（ベイズ分析）。
+- 関係: 文献18と同様に、**効果なし**の報告。
+- 確認状況: 検索結果の要約のみ。著者・年・掲載誌は未確認。
+- https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11549167/
+
+### 21. 歯学生のレントゲン読影での視線に基づく比較介入
+
+*How to support dental students in reading radiographs: effects of a gaze-based compare-and-contrast intervention.*（掲載誌はURLからAdvances in Health Sciences Educationと思われる）
+
+- 内容: 学生の視線を、モデル（全体を網羅した視線）と比較させる介入。介入群は、画像の網羅が増え、異常部位を見る頻度と時間が減った。
+- 関係: 網羅の改善が見られた、比較的肯定的な例。「自分の視線と、望ましい視線の比較」という提示方法の参考になる。
+- 確認状況: 検索結果の要約のみ。著者・年は未確認。
+- https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8238744/
+
+### 22. 美術館での視線計測（較正不要のトラッカー）
+
+*Testing a Calibration-Free Eye Tracker Prototype at the Kunsthistorisches Museum in Vienna.* Journal of Eye Movement Research, 13(2). DOI: 10.16910/jemr.13.2.10
+
+- 内容: 絵画の下に隠して設置した較正不要のトラッカーのプロトタイプ。データの質は、絵画**内部**の視線分析には不十分だったが、絵画ごとの注視時間の違いは取れた。
+- 関係: 精度が足りないと、領域ごとの分析ができないという実例。ウェブカメラの精度（文献12〜15）を考えるうえで、領域の粒度を決める根拠になる。
+- 確認状況: 検索結果の要約による。巻号はDOIの表記から。
+- https://doi.org/10.16910/jemr.13.2.10
+
+---
+
 ## 現時点の見立て
 
 ### カードゲーム案（A）
@@ -193,6 +246,13 @@ McConkie & Rayner (1975)（読書。掲載誌は未確認）／Loschky & McConki
 - 検索した範囲では、「絵画で、視線に連動して陰影・色彩が段階的に現れる」研究は見つからなかった。ただし、絵の見え方を変えると視線が変わること（文献7）、気づかれない誘導の技術（文献10）、「局所だけ見える」表示が視線行動を変えること（文献11）という、周辺の土台がそろっている。
 - 条件A（視線駆動）は、計測する視線が表示そのものに影響される点を限界として扱う必要がある（文献11）。
 
+### 未注目領域の提示（D）
+
+- 検索した範囲では、「鑑賞者が見ていない領域を検出して提示する」絵画鑑賞支援の研究は見つからなかった。最も近いのは、視線に連動して応答する絵画の対話システム（Bellucciら）だが、見落としを示すものではない。
+- 探索・読影で「見た／見ていない領域」を示す研究は、効果が**不一致〜限定的**（文献18・20は効果なし、19は検出は向上するが網羅率は変わらず、21は網羅が増加）。鑑賞でも、効果が出ない可能性を前提に、評価の設計を行う。
+- 鑑賞には「探す対象」が無いので、成績の代わりに「発見」「理解」をどう測るかが課題になる（再認テスト、主観評価など）。
+- 領域単位の分析に必要な精度は、ウェブカメラや美術館の既存例でも課題になっている（文献12・13・22）。領域の粒度は精度に合わせる。
+
 ### ウェブカメラ視線の精度（C）
 
 - WebGazerの誤差は約4°（文献12）。視聴距離50〜60cm・96dpiの仮定で約130〜160pxに相当する（私の概算）。精度検証モードの札の間隔は、3枚が220px、5枚が150px、7枚が102pxなので、**3枚は境目で、5枚・7枚は偶然水準に近づく可能性が高い。** 実測の結果と照らして確かめる。
@@ -204,5 +264,6 @@ McConkie & Rayner (1975)（読書。掲載誌は未確認）／Loschky & McConki
 - 各文献を原典（DOI）で確認し、書誌情報を直す。特に、文献8・9・14の書誌と、文献13の実験室の機器。
 - CiNii・J-STAGE・Google Scholarで検索する。
   - 日本語: 「ババ抜き 視線」「ポーカーフェイス 視線」「視線 駆け引き」「欺瞞 視線 アイトラッキング」「視線誘導 絵画 構図」
+  - 未注目領域・鑑賞支援: 「視線 未注視 領域 提示」「鑑賞支援 アイトラッキング」、"gaze feedback unviewed regions", "perceptual feedback", "gaze-aware museum guide", "attention coverage art viewing"
   - 英語: "eye tracking" + deception / poker / concealed information, "social gaze competitive game", "gaze cascade choice prediction", "gaze guidance painting", "saliency modulation artwork", "gaze-contingent artwork", "webcam eye tracking accuracy validation"
 - 見つけた文献は、原典で書誌情報を確認してからこのメモに追記する。
