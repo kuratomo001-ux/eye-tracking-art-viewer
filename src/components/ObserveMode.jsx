@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GazeTracker } from "../lib/gazeTracker.js";
-import { computeDwell, summarizeAttention } from "../lib/aoi.js";
+import { computeAttentionTimes, computeDwell, computeVisits, summarizeAttention } from "../lib/aoi.js";
 import { AOIS_BY_ART } from "../data/aois.js";
 import { resolveArtwork } from "../artworks.js";
 import CalibrationScreen from "./CalibrationScreen.jsx";
@@ -18,6 +18,8 @@ const SIZES = [
 const DURATIONS_SEC = [30, 60, 120];
 const DEFAULT_THRESHOLD_MS = 1000; // 「注目した」とみなす累積滞在時間の既定値(パイロットで決める)
 const FIGURE_WIDTH = 640;
+// これより短い滞在は、領域の境界付近の視線の揺れとみなして、遷移の列から除く。
+const MIN_VISIT_MS = 200;
 
 const ATTENDED_FILL = "rgba(68, 187, 164, 0.4)";
 const UNATTENDED_FILL = "rgba(233, 79, 55, 0.4)";
@@ -124,10 +126,16 @@ export default function ObserveMode() {
   }, [phase, durationSec]);
 
   const dwell = useMemo(() => (result ? computeDwell(result.samples, aois) : null), [result, aois]);
-  const summary = useMemo(
-    () => (dwell ? summarizeAttention(dwell, aois, thresholdMs) : null),
-    [dwell, aois, thresholdMs],
+  const summary = useMemo(() => {
+    if (!dwell) return null;
+    const attendedAt = computeAttentionTimes(result.samples, aois, thresholdMs);
+    return summarizeAttention(dwell, aois, thresholdMs, attendedAt);
+  }, [dwell, result, aois, thresholdMs]);
+  const visits = useMemo(
+    () => (result ? computeVisits(result.samples, aois, { minVisitMs: MIN_VISIT_MS }) : null),
+    [result, aois],
   );
+  const labelOf = (id) => (id === null ? "作品の外" : aois.find((a) => a.id === id).label);
 
   const download = () => {
     const payload = {
@@ -146,6 +154,13 @@ export default function ObserveMode() {
         thresholdMs,
       },
       aois: summary.rows,
+      visits: visits.map((v) => ({
+        id: v.id,
+        startMs: Math.round(v.startMs),
+        endMs: Math.round(v.endMs),
+        durationMs: Math.round(v.durationMs),
+      })),
+      minVisitMs: MIN_VISIT_MS,
       outsideMs: dwell.outsideMs,
       samples: result.samples.map((s) => ({
         t: Math.round(s.t),
@@ -291,7 +306,7 @@ export default function ObserveMode() {
                               className="observe__label"
                               textAnchor="middle"
                             >
-                              {a.label}
+                              {row.order ? `${row.order}. ${a.label}` : a.label}
                             </text>
                           </g>
                         );
@@ -334,6 +349,8 @@ export default function ObserveMode() {
                       <th>滞在</th>
                       <th>割合</th>
                       <th>注目</th>
+                      <th>注目した順</th>
+                      <th>注目した時刻</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -345,6 +362,8 @@ export default function ObserveMode() {
                         <td className={r.attended ? "observe__attended" : "observe__unattended"}>
                           {r.attended ? "○" : "×"}
                         </td>
+                        <td>{r.order ?? "—"}</td>
+                        <td>{r.attendedAtMs === null ? "—" : `${sec(r.attendedAtMs)}秒`}</td>
                       </tr>
                     ))}
                     <tr>
@@ -352,9 +371,22 @@ export default function ObserveMode() {
                       <td>{sec(dwell.outsideMs)}秒</td>
                       <td>{dwell.totalMs > 0 ? pct(dwell.outsideMs / dwell.totalMs) : "—"}</td>
                       <td />
+                      <td />
+                      <td />
                     </tr>
                   </tbody>
                 </table>
+                <h2 className="observe__subheading">視線の移動（領域の遷移）</h2>
+                <p className="observe__note">
+                  同じ領域に続けて目を向けていた区間を1つにまとめています。{MIN_VISIT_MS}ms未満の短い滞在は、領域の境界付近の揺れとして除いています。
+                </p>
+                <ol className="observe__visits">
+                  {visits.map((v, i) => (
+                    <li key={i} className={v.id === null ? "observe__visit-outside" : undefined}>
+                      {labelOf(v.id)}（{sec(v.startMs)}〜{sec(v.endMs)}秒）
+                    </li>
+                  ))}
+                </ol>
               </div>
             </div>
             <div className="observe__actions">

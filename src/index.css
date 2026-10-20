@@ -310,3 +310,30 @@ body {
   display: flex;
   gap: 12px;
 }
+
+.observe__subheading {
+  font-size: 15px;
+  margin: 16px 0 4px;
+  text-align: left;
+}
+
+.observe__note {
+  font-size: 12px;
+  color: #aaa;
+  text-align: left;
+  max-width: 360px;
+  margin: 0 0 6px;
+}
+
+.observe__visits {
+  text-align: left;
+  font-size: 14px;
+  max-height: 220px;
+  overflow: auto;
+  margin: 0;
+  padding-left: 24px;
+}
+
+.observe__visit-outside {
+  color: #888;
+}
