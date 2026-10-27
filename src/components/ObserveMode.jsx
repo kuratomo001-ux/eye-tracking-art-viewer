@@ -286,7 +286,7 @@ export default function ObserveMode() {
                     viewBox={`0 0 ${FIGURE_WIDTH} ${FIGURE_WIDTH / aspect}`}
                   >
                     {aois
-                      .filter((a) => a.id !== "otherWall")
+                      .filter((a) => !a.catchAll)
                       .map((a) => {
                         const row = summary.rows.find((r) => r.id === a.id);
                         const [cx, cy] = centroid(a.polygon);

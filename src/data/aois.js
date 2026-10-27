@@ -8,6 +8,8 @@
 // 領域の粒度は、ウェブカメラ視線の誤差(約4°、約130〜160px)に合わせて粗く始めている。
 // 壁の絵・鏡・タオルのような小物は誤差より小さいので、個別の領域にはしていない。
 
+// catchAll: true は「どの領域にも当てはまらなかった残り全部」を受ける領域(全面を覆う多角形で、
+// 配列の最後に置く)。結果の図では、全面が塗りつぶされてしまうので図形としては描かない。
 function fromPixels(width, height, points) {
   return points.map(([x, y]) => [x / width, y / height]);
 }
@@ -18,6 +20,13 @@ const rect = (x0, y0, x1, y1) => [
   [x1, y1],
   [x0, y1],
 ];
+
+// 楕円を多角形で近似する(月や渦のような丸い領域用)。
+const ellipse = (cx, cy, rx, ry, n = 36) =>
+  Array.from({ length: n }, (_, i) => {
+    const t = (2 * Math.PI * i) / n;
+    return [cx + rx * Math.cos(t), cy + ry * Math.sin(t)];
+  });
 
 const BEDROOM_SIZE = { width: 1280, height: 1016 };
 
@@ -78,16 +87,87 @@ const bedroomPixels = [
       [0, 868],
     ],
   },
-  { id: "otherWall", label: "壁・ドア（その他）", points: rect(0, 0, 1280, 1016) },
+  { id: "otherWall", label: "壁・ドア（その他）", points: rect(0, 0, 1280, 1016), catchAll: true },
 ];
 
-export const BEDROOM_AOIS = bedroomPixels.map(({ id, label, points }) => ({
+export const BEDROOM_AOIS = bedroomPixels.map(({ id, label, points, catchAll = false }) => ({
   id,
   label,
+  catchAll,
   polygon: fromPixels(BEDROOM_SIZE.width, BEDROOM_SIZE.height, points),
+}));
+
+// 星月夜(900x712)。空が大半を占め、星・月・渦は筆致の渦の中にあるので、
+// 誤差(約130〜160px)より小さい個々の星は個別の領域にせず、粗く9つに分ける。
+// 判定は先頭から順(最初に当てはまったものを採用)。月・糸杉・村・渦のようにはっきりした物を先に、
+// 空を後ろに置く。「上・右の空」は帯の上端より上の残り全部を受けるので、空にすき間は出ない。
+// 最後の「その他」に残るのは、左下の茂みなど。
+const STARRY_SIZE = { width: 900, height: 712 };
+
+const starryPixels = [
+  { id: "moon", label: "月", points: ellipse(800, 120, 105, 105) },
+  {
+    id: "cypress",
+    label: "糸杉",
+    points: [
+      [178, 38], [190, 100], [197, 180], [212, 260], [240, 330], [255, 400], [265, 408],
+      [272, 440], [300, 490], [335, 525], [352, 570], [368, 610], [390, 660], [418, 712],
+      [105, 712], [106, 600], [112, 520], [127, 450], [135, 390], [140, 330], [133, 255],
+      [135, 222], [158, 180], [162, 100],
+    ],
+  },
+  {
+    id: "village",
+    label: "村と教会",
+    points: [
+      [320, 540], [480, 535], [520, 520], [640, 505], [800, 512], [900, 505], [900, 712],
+      [418, 712], [320, 712],
+    ],
+  },
+  {
+    id: "hills",
+    label: "丘と山",
+    points: [
+      [320, 480], [440, 465], [560, 445], [690, 440], [790, 405], [830, 365], [900, 365],
+      [900, 505], [800, 512], [640, 505], [520, 520], [480, 535], [320, 540], [320, 480],
+    ],
+  },
+  { id: "swirl", label: "渦巻き", points: ellipse(520, 268, 215, 148) },
+  {
+    id: "band",
+    label: "明るい帯（雲）",
+    points: [
+      [330, 425], [450, 400], [560, 395], [660, 380], [760, 330], [900, 285], [900, 372],
+      [790, 405], [690, 440], [560, 445], [440, 465], [330, 480],
+    ],
+  },
+  {
+    id: "skyLeft",
+    label: "左の空",
+    points: [
+      [0, 0], [340, 0], [340, 250], [400, 330], [405, 420], [330, 425], [330, 480],
+      [300, 520], [130, 520], [110, 600], [0, 610],
+    ],
+  },
+  {
+    id: "skyTopRight",
+    label: "上・右の空",
+    points: [
+      [330, 0], [900, 0], [900, 285], [760, 330], [660, 380], [560, 395], [450, 400], [330, 425],
+    ],
+  },
+  { id: "otherStarry", label: "その他", points: rect(0, 0, 900, 712), catchAll: true },
+];
+
+export const STARRY_AOIS = starryPixels.map(({ id, label, points, catchAll = false }) => ({
+  id,
+  label,
+  catchAll,
+  polygon: fromPixels(STARRY_SIZE.width, STARRY_SIZE.height, points),
 }));
 
 // 作品のキー(?art=)ごとの領域定義。定義の無い作品は観察モードで集計できない。
 export const AOIS_BY_ART = {
   bedroom: BEDROOM_AOIS,
+  starry: STARRY_AOIS,
 };
