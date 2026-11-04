@@ -284,6 +284,20 @@ body {
   width: 80px;
 }
 
+.observe__check input[type="text"] {
+  width: 200px;
+}
+
+.experiment__fixation {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  color: #bbb;
+}
+
 .observe__table {
   border-collapse: collapse;
   font-size: 14px;

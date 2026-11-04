@@ -166,8 +166,109 @@ export const STARRY_AOIS = starryPixels.map(({ id, label, points, catchAll = fal
   polygon: fromPixels(STARRY_SIZE.width, STARRY_SIZE.height, points),
 }));
 
+// ゴッホ「自画像」(1887、900x1137)。顔が画面の大きな部分を占めるので、顔・目・髪と耳・服・背景に分ける。
+// 目は顔の中の小さな領域で、ウェブカメラ視線の誤差(約130〜160px)と同程度の大きさ。
+// 「目まで判別できるか」自体が精度の確認になるので、あえて別の領域にしてある。
+const PORTRAIT_SIZE = { width: 900, height: 1137 };
+
+const portraitPixels = [
+  { id: "eyes", label: "目", points: rect(265, 375, 545, 485) },
+  {
+    id: "face",
+    label: "顔（髭を含む）",
+    points: [
+      [320, 200], [420, 170], [560, 175], [640, 260], [660, 340], [640, 420], [660, 560], [620, 640],
+      [560, 720], [470, 780], [380, 760], [330, 700], [290, 640], [300, 540], [265, 440], [275, 340],
+    ],
+  },
+  {
+    id: "hair",
+    label: "髪と耳",
+    points: [
+      [280, 300], [310, 170], [430, 100], [600, 100], [740, 170], [790, 300], [790, 420], [745, 430],
+      [745, 560], [690, 600], [640, 570],
+    ],
+  },
+  {
+    id: "clothes",
+    label: "服",
+    points: [
+      [200, 760], [300, 720], [330, 700], [380, 770], [430, 850], [440, 900], [520, 830], [640, 690],
+      [680, 600], [745, 590], [900, 700], [900, 1137], [60, 1137], [110, 1000],
+    ],
+  },
+  { id: "backgroundPortrait", label: "背景", points: rect(0, 0, 900, 1137), catchAll: true },
+];
+
+export const PORTRAIT_AOIS = portraitPixels.map(({ id, label, points, catchAll = false }) => ({
+  id,
+  label,
+  catchAll,
+  polygon: fromPixels(PORTRAIT_SIZE.width, PORTRAIT_SIZE.height, points),
+}));
+
+// ゴッホ「糸杉のある麦畑」(1889、900x708)。糸杉・手前の木・遠景・麦畑・手前の草・空(左右)に分ける。
+const WHEAT_SIZE = { width: 900, height: 708 };
+
+const wheatPixels = [
+  {
+    id: "cypress",
+    label: "糸杉",
+    points: [
+      [760, 25], [790, 50], [800, 130], [820, 240], [845, 330], [850, 400], [830, 450], [760, 470],
+      [690, 495], [650, 480], [655, 420], [690, 330], [720, 265], [740, 190], [750, 100],
+    ],
+  },
+  {
+    id: "leftTree",
+    label: "手前の木",
+    points: [[85, 420], [190, 385], [290, 395], [360, 450], [385, 520], [330, 560], [200, 575], [120, 540]],
+  },
+  {
+    id: "farLand",
+    label: "遠景（山と木立）",
+    points: [
+      [300, 440], [420, 380], [520, 345], [690, 335], [640, 400], [640, 480], [700, 500], [560, 500],
+      [400, 490], [340, 470],
+    ],
+  },
+  {
+    id: "grassRight",
+    label: "手前の草（右下）",
+    points: [[650, 640], [760, 600], [900, 560], [900, 708], [600, 708]],
+  },
+  {
+    id: "field",
+    label: "麦畑",
+    points: [
+      [0, 500], [330, 510], [500, 498], [700, 500], [900, 490], [900, 575], [760, 610], [650, 650],
+      [600, 708], [0, 708],
+    ],
+  },
+  {
+    id: "skyLeft",
+    label: "左の空と雲",
+    points: [[0, 0], [420, 0], [420, 330], [330, 410], [190, 380], [90, 420], [0, 440]],
+  },
+  {
+    id: "skyRight",
+    label: "右の空と雲",
+    points: [[420, 0], [900, 0], [900, 420], [700, 330], [600, 335], [520, 345], [420, 380]],
+  },
+  { id: "otherWheat", label: "その他", points: rect(0, 0, 900, 708), catchAll: true },
+];
+
+export const WHEAT_AOIS = wheatPixels.map(({ id, label, points, catchAll = false }) => ({
+  id,
+  label,
+  catchAll,
+  polygon: fromPixels(WHEAT_SIZE.width, WHEAT_SIZE.height, points),
+}));
+
 // 作品のキー(?art=)ごとの領域定義。定義の無い作品は観察モードで集計できない。
 export const AOIS_BY_ART = {
   bedroom: BEDROOM_AOIS,
   starry: STARRY_AOIS,
+  portrait: PORTRAIT_AOIS,
+  wheat: WHEAT_AOIS,
 };
