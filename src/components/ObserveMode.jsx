@@ -4,6 +4,7 @@ import { computeAttentionTimes, computeDwell, computeVisits, summarizeAttention 
 import { AOIS_BY_ART } from "../data/aois.js";
 import { resolveArtwork } from "../artworks.js";
 import CalibrationScreen from "./CalibrationScreen.jsx";
+import AoiFigure from "./AoiFigure.jsx";
 
 // 観察モード: 作品を全体表示して自由に鑑賞してもらい、視線を記録して、
 // 領域(AOI)ごとの滞在時間と「注目したか」を集計する。
@@ -21,15 +22,8 @@ const FIGURE_WIDTH = 640;
 // これより短い滞在は、領域の境界付近の視線の揺れとみなして、遷移の列から除く。
 const MIN_VISIT_MS = 200;
 
-const ATTENDED_FILL = "rgba(68, 187, 164, 0.4)";
-const UNATTENDED_FILL = "rgba(233, 79, 55, 0.4)";
-
 const sec = (ms) => (ms / 1000).toFixed(1);
 const pct = (v) => `${Math.round(v * 100)}%`;
-const centroid = (polygon) => {
-  const n = polygon.length;
-  return [polygon.reduce((s, p) => s + p[0], 0) / n, polygon.reduce((s, p) => s + p[1], 0) / n];
-};
 
 export default function ObserveMode() {
   const { key: artKey, colorSrc } = useMemo(resolveArtwork, []);
@@ -277,55 +271,15 @@ export default function ObserveMode() {
             </p>
             <div className="observe__results">
               <div>
-                <div className="observe__figure" style={{ width: FIGURE_WIDTH, height: FIGURE_WIDTH / aspect }}>
-                  <img src={colorSrc} width={FIGURE_WIDTH} height={FIGURE_WIDTH / aspect} alt="" />
-                  <svg
-                    className="observe__overlay"
-                    width={FIGURE_WIDTH}
-                    height={FIGURE_WIDTH / aspect}
-                    viewBox={`0 0 ${FIGURE_WIDTH} ${FIGURE_WIDTH / aspect}`}
-                  >
-                    {aois
-                      .filter((a) => !a.catchAll)
-                      .map((a) => {
-                        const row = summary.rows.find((r) => r.id === a.id);
-                        const [cx, cy] = centroid(a.polygon);
-                        return (
-                          <g key={a.id}>
-                            <polygon
-                              points={a.polygon
-                                .map(([u, v]) => `${u * FIGURE_WIDTH},${(v * FIGURE_WIDTH) / aspect}`)
-                                .join(" ")}
-                              fill={row.attended ? ATTENDED_FILL : UNATTENDED_FILL}
-                              stroke="white"
-                              strokeWidth="1.5"
-                            />
-                            <text
-                              x={cx * FIGURE_WIDTH}
-                              y={(cy * FIGURE_WIDTH) / aspect}
-                              className="observe__label"
-                              textAnchor="middle"
-                            >
-                              {row.order ? `${row.order}. ${a.label}` : a.label}
-                            </text>
-                          </g>
-                        );
-                      })}
-                    {showPoints &&
-                      result.samples
-                        .filter((s) => s.u >= 0 && s.u <= 1 && s.v >= 0 && s.v <= 1)
-                        .map((s, i) => (
-                          <circle
-                            key={i}
-                            cx={s.u * FIGURE_WIDTH}
-                            cy={(s.v * FIGURE_WIDTH) / aspect}
-                            r="2"
-                            fill="white"
-                            fillOpacity="0.7"
-                          />
-                        ))}
-                  </svg>
-                </div>
+                <AoiFigure
+                  src={colorSrc}
+                  aois={aois}
+                  rows={summary.rows}
+                  samples={result.samples}
+                  aspect={aspect}
+                  width={FIGURE_WIDTH}
+                  showPoints={showPoints}
+                />
                 <label className="observe__check">
                   <input type="checkbox" checked={showPoints} onChange={(e) => setShowPoints(e.target.checked)} />
                   視線の点を表示

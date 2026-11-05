@@ -6,6 +6,7 @@ import { buildPlan, COLOR_FILTER, FACTORS, SIZE_SCALE } from "../lib/experimentP
 import { AOIS_BY_ART } from "../data/aois.js";
 import { artworkSources } from "../artworks.js";
 import CalibrationScreen from "./CalibrationScreen.jsx";
+import AoiFigure from "./AoiFigure.jsx";
 
 // 実験モード: 絵の見せ方(色・画面サイズ・情報量のどれか1つ)を変えて、人物画・風景画・室内画を
 // 順に見てもらい、視線(滞在時間・見る順番・散らばり・移動距離)を記録する。
@@ -18,6 +19,7 @@ const THRESHOLD_MS = 1000; // 「注目した」の既定。生のサンプル�
 const MIN_VISIT_MS = 200;
 const FIXATION_MS = 1500; // 作品を出す前に中央を見てもらい、毎回同じ位置から始める
 const EXPERIENCES = ["なし", "少しある", "ある"];
+const FIGURE_WIDTH = 330;
 
 const sec = (ms) => (ms / 1000).toFixed(1);
 const pct = (v) => `${Math.round(v * 100)}%`;
@@ -37,6 +39,7 @@ export default function ExperimentMode({ factor }) {
   const [trialIndex, setTrialIndex] = useState(0);
   const [results, setResults] = useState([]);
   const [aspects, setAspects] = useState({});
+  const [showPoints, setShowPoints] = useState(true);
 
   const trackerRef = useRef(null);
   if (!trackerRef.current) trackerRef.current = new GazeTracker();
@@ -421,6 +424,36 @@ export default function ExperimentMode({ factor }) {
                 })}
               </tbody>
             </table>
+            <h2 className="observe__subheading">領域で分けた図</h2>
+            <p className="observe__note">
+              緑＝注目した領域（累積の滞在が{sec(THRESHOLD_MS)}秒以上）、赤＝注目していない領域。番号は注目した順。
+            </p>
+            <label className="observe__check">
+              <input type="checkbox" checked={showPoints} onChange={(e) => setShowPoints(e.target.checked)} />
+              視線の点を表示
+            </label>
+            <div className="experiment__figures">
+              {results.map((r) => {
+                const { condition } = r.trial;
+                return (
+                  <div key={r.trial.position}>
+                    <AoiFigure
+                      src={condition.info === "simple" ? sources[r.trial.art].simpleSrc : sources[r.trial.art].colorSrc}
+                      filter={COLOR_FILTER[condition.color]}
+                      aois={AOIS_BY_ART[r.trial.art]}
+                      rows={r.summary.rows}
+                      samples={r.samples}
+                      aspect={aspects[r.trial.art] ?? 1}
+                      width={FIGURE_WIDTH}
+                      showPoints={showPoints}
+                    />
+                    <p className="observe__note">
+                      {r.trial.position + 1}. {sources[r.trial.art].title}（{levelLabel(r.trial.factor, r.trial.level)}）
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
             {results.map((r) => (
               <details key={r.trial.position}>
                 <summary>

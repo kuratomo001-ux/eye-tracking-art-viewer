@@ -301,6 +301,13 @@ body {
   color: #8fd3ff;
 }
 
+.experiment__figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
 .experiment__fixation {
   position: absolute;
   inset: 0;
