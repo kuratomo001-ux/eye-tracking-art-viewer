@@ -4,6 +4,8 @@ import CalibrationScreen from "./components/CalibrationScreen.jsx";
 import AccuracyTest from "./components/AccuracyTest.jsx";
 import ObserveMode from "./components/ObserveMode.jsx";
 import ExperimentMode from "./components/ExperimentMode.jsx";
+import ExperimentMenu from "./components/ExperimentMenu.jsx";
+import { FACTORS } from "./lib/experimentPlan.js";
 import { resolveArtwork } from "./artworks.js";
 
 function ArtViewer() {
@@ -88,12 +90,16 @@ function ArtViewer() {
 }
 
 // ?mode=accuracy で視線の精度検証、?mode=observe で観察モード(領域ごとの視線の集計)、
-// ?mode=experiment で実験モード(見せ方の条件を変えて複数の作品を見てもらう)を開く。
+// ?mode=experiment&factor=color|size|info で実験モード(見せ方の条件を変えて複数の作品を見てもらう)を開く。
+// 実験は条件ごとに分かれていて、factorが無い(または不正な)ときは選択画面になる。
 // 指定が無ければ絵画ビューアー。
 export default function App() {
   const mode = new URLSearchParams(window.location.search).get("mode");
   if (mode === "accuracy") return <AccuracyTest />;
   if (mode === "observe") return <ObserveMode />;
-  if (mode === "experiment") return <ExperimentMode />;
+  if (mode === "experiment") {
+    const factor = new URLSearchParams(window.location.search).get("factor");
+    return Object.hasOwn(FACTORS, factor) ? <ExperimentMode factor={factor} /> : <ExperimentMenu />;
+  }
   return <ArtViewer />;
 }

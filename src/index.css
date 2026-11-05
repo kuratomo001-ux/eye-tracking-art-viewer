@@ -288,6 +288,19 @@ body {
   width: 200px;
 }
 
+.experiment__menu {
+  list-style: none;
+  padding: 0;
+}
+
+.experiment__menu li {
+  margin: 16px 0;
+}
+
+.experiment__menu a {
+  color: #8fd3ff;
+}
+
 .experiment__fixation {
   position: absolute;
   inset: 0;

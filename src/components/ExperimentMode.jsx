@@ -9,6 +9,7 @@ import CalibrationScreen from "./CalibrationScreen.jsx";
 
 // 実験モード: 絵の見せ方(色・画面サイズ・情報量のどれか1つ)を変えて、人物画・風景画・室内画を
 // 順に見てもらい、視線(滞在時間・見る順番・散らばり・移動距離)を記録する。
+// 条件(要因)ごとに別の実験として分けてあり、どの要因かは factor で固定する(App.jsxで?factor=から渡す)。
 // 「条件を変えると視線は変わるか」を調べるための、仮説検証用の流れ。
 // 割り当ての考え方は lib/experimentPlan.js を参照。
 const SESSION_ARTS = ["bedroom", "wheat", "portrait"]; // 室内画・風景画・人物画
@@ -22,12 +23,12 @@ const sec = (ms) => (ms / 1000).toFixed(1);
 const pct = (v) => `${Math.round(v * 100)}%`;
 const levelLabel = (factor, id) => FACTORS[factor].levels.find((l) => l.id === id).label;
 
-export default function ExperimentMode() {
+export default function ExperimentMode({ factor }) {
+  const factorInfo = FACTORS[factor];
   const [phase, setPhase] = useState("setup"); // setup | starting | unavailable | calibrating | ready | fixation | viewing | done
   const [form, setForm] = useState({
     participantId: "",
     group: 1,
-    factor: "color",
     durationSec: 60,
     distanceCm: "",
     screenWidthCm: "",
@@ -43,8 +44,8 @@ export default function ExperimentMode() {
 
   const sources = useMemo(() => Object.fromEntries(SESSION_ARTS.map((k) => [k, artworkSources(k)])), []);
   const plan = useMemo(
-    () => buildPlan({ factor: form.factor, group: form.group - 1, arts: SESSION_ARTS }),
-    [form.factor, form.group],
+    () => buildPlan({ factor, group: form.group - 1, arts: SESSION_ARTS }),
+    [factor, form.group],
   );
   const trial = plan[trialIndex];
 
@@ -173,7 +174,7 @@ export default function ExperimentMode() {
         date: new Date().toISOString(),
         participantId: form.participantId,
         group: form.group,
-        factor: form.factor,
+        factor,
         artExperience: form.experience,
         durationSec: form.durationSec,
         viewing,
@@ -220,7 +221,7 @@ export default function ExperimentMode() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `experiment-${form.participantId || "anon"}-${form.factor}-g${form.group}-${Date.now()}.json`;
+    a.download = `experiment-${form.participantId || "anon"}-${factor}-g${form.group}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -266,10 +267,11 @@ export default function ExperimentMode() {
       <div className="observe__panel">
         {phase === "setup" && (
           <>
-            <h1>実験モード</h1>
+            <h1>実験: {factorInfo.label}</h1>
+            <p>{factorInfo.intro}</p>
             <p>
-              絵の見せ方を1つだけ変えて、3つの作品（室内画・風景画・人物画）を順に鑑賞します。
-              1人が同じ作品を見るのは1回です。作品と条件の組み合わせは、グループ番号で決まります。
+              3つの作品（室内画・風景画・人物画）を順に鑑賞します。1人が同じ作品を見るのは1回です。
+              作品と条件の組み合わせは、グループ番号で決まります。
               <br />
               鑑賞中はEscキーで途中終了できます。映像は外部に送信されません。
             </p>
@@ -305,15 +307,6 @@ export default function ExperimentMode() {
                 </label>
               </fieldset>
               <fieldset>
-                <legend>変える要因</legend>
-                {Object.entries(FACTORS).map(([id, f]) => (
-                  <label key={id}>
-                    <input type="radio" name="factor" checked={form.factor === id} onChange={() => set("factor")(id)} />
-                    {f.label}（{f.levels.map((l) => l.label).join("・")}）
-                  </label>
-                ))}
-              </fieldset>
-              <fieldset>
                 <legend>鑑賞時間（1作品）</legend>
                 {DURATIONS_SEC.map((d) => (
                   <label key={d}>
@@ -328,7 +321,7 @@ export default function ExperimentMode() {
                 ))}
               </fieldset>
               <fieldset>
-                <legend>見る距離と画面（視角に換算）</legend>
+                <legend>見る距離と画面（視角に換算）{factorInfo.needsViewing ? "（必須）" : ""}</legend>
                 <label className="observe__check">
                   画面までの距離（cm）:{" "}
                   <input type="number" min="0" value={form.distanceCm} onChange={(e) => set("distanceCm")(e.target.value)} />
@@ -347,10 +340,12 @@ export default function ExperimentMode() {
             <p className="observe__note">
               このグループの順番と条件:{" "}
               {plan
-                .map((t) => `${t.position + 1}. ${sources[t.art].genre}（${levelLabel(form.factor, t.level)}）`)
+                .map((t) => `${t.position + 1}. ${sources[t.art].genre}（${levelLabel(factor, t.level)}）`)
                 .join(" → ")}
             </p>
-            <button onClick={handleStart}>Webカメラを起動して開始</button>
+            <button onClick={handleStart} disabled={factorInfo.needsViewing && !(viewing.distanceCm && viewing.screenWidthCm)}>
+              Webカメラを起動して開始
+            </button>
           </>
         )}
 
