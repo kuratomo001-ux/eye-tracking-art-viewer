@@ -32,6 +32,8 @@ npm run dev
 
 `?mode=experiment`を付けて開くと、絵の見せ方を変えて、室内画・風景画・人物画の3作品を順に鑑賞してもらい、視線を記録する実験モードになる。実験は条件ごとに分かれていて、`&factor=`で選ぶ（`color`＝色、`size`＝画面サイズ、`info`＝情報量。例: `.../eye-tracking-art-viewer/?mode=experiment&factor=color`）。`factor`を付けないと選択画面になる。画面サイズの実験は、見る距離と画面の横幅の入力が必須。同じ絵を何度も見ると慣れで視線が変わるので、1人が同じ絵を見るのは1回にし、作品と条件の組み合わせをグループ番号（1〜3）でずらす。滞在時間・見た順番に加えて、領域に依らない視線の散らばり・移動距離も記録する。見る距離と画面の横幅を入れると、視角（度）に換算される。
 
+実験モードで保存したJSONは、`node scripts/analyze-experiments.mjs <JSONのあるフォルダ> --out analysis`で集計できる（Node.jsだけで動く）。条件ごとの表と図の`report.html`、`trials.csv`・`summary.csv`・`aoi-share.csv`が出る。参加者のデータなので、`data/`と`analysis/`は`.gitignore`済み（公開リポジトリにコミットしない）。
+
 `?mode=accuracy`を付けて開くと、Webカメラ視線で札サイズの領域をどこまで識別できるかを測る精度検証モードになる（例: `.../eye-tracking-art-viewer/?mode=accuracy`）。
 
 作品は`public/assets/`に「線画」と「陰影・色彩」の画像を同じ構図・同じ寸法の対で置き、`src/artworks.js`の`ARTWORKS`に登録する。`?art=`で切り替える（例: `?art=starry`）。指定が無い場合や不正な値のときは既定の作品になる。

@@ -3,3 +3,7 @@ node_modules/
 *.log
 dist/
 .vite/
+
+# 実験の参加者データと、その集計結果は公開リポジトリに置かない
+data/
+analysis/
